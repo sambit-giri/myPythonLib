@@ -35,13 +35,7 @@ def dbscan_cube(cube, eps=1.12, min_samples=7, metric='euclidean', weight=False)
 	input      : 3D array of ionization fraction.
 	eps        : Minimum distance from neighbours (Default:1.12).
 	min_samples: Minimum number of neighbours including the point itself (Default: 7).
-	metric     : Define the distance metric (Default: 'euclidean').
-		     - from scikit-learn: ['cityblock', 'cosine', 'euclidean', 'l1', 'l2', 'manhattan']
-                     - from scipy.spatial.distance: ['braycurtis', 'canberra', 'chebyshev',
-                                          'correlation', 'dice', 'hamming', 'jaccard', 'kulsinski',
-                                          'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto',
-                                          'russellrao', 'seuclidean', 'sokalmichener', 'sokalsneath',
-                                          'sqeuclidean', 'yule']
+	metric     : Define the distance metric (Default: 'auto').
 	weight     : It is a boolean defining if each point should be weighted with the point value
 		     as the cluster forming probability (Default: False).
 
