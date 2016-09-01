@@ -102,7 +102,44 @@ def draw_sphere(array, centre, radius, label=1, periodic=True):
 					if i*i+j*j+k*k <= radius*radius: array[x,y,z] = label
 	if periodic: print "Periodic sphere of radius", radius, "made at", centre
 	else: print "Non-periodic sphere of radius", radius, "made at", centre
+
+def draw_circle(array, centre, radius, label=1, periodic=True):
+	nx, ny = array.shape
+	rang = np.arange(-radius, radius+1)
+	for i in rang:
+		for j in rang:
+			x = centre[0]+i
+			y = centre[1]+j
+			range_condition = x in range(0,nx) and y in range(0,ny)
+			if range_condition or periodic:
+				if i*i+j*j <= radius*radius: array[x,y] = label
+	if periodic: print "Periodic circle of radius", radius, "made at", centre
+	else: print "Non-periodic circle of radius", radius, "made at", centre
 				
 				
-					 
+def evolving_sphere(R, z, res=256, c_res=c2t.conv.LB, alpha=4.):
+	#assert(res==2*Rb)
+	ar = np.zeros((res,res,res))
+	cdist  = c2t.z_to_cdist(z)
+	cdist_low  = cdist-c2t.conv.LB/2
+	cdist_high = cdist+c2t.conv.LB/2
+	cdists = np.linspace(cdist_low, cdist_high, res)
+	zs = c2t.cdist_to_z(cdists)
+	cx, cy, cz = np.round(res/2.), np.round(res/2.), np.round(res/2.)
+	RR = R*np.exp(alpha*(z-zs))   # Exponential growth
+	#RR = R+alpha*R*(z-zs)	       # Linear
+	#RR = R+alpha*R*(z-zs)**3      # Cubic
+	for k in xrange(res):
+		r = RR[k]*(1+z)/(1+zs[k])
+		x = np.abs(k-cz)
+		if r>x:
+			rp = np.sqrt(r**2-x**2)
+			dum = np.zeros((res,res))
+			draw_circle(dum, [cx,cy], rp, label=1, periodic=True)
+			#dum[cx,cy+rp], dum[cx,cy-rp] = 1, 1
+			ar[:,:,k] = dum
+	return ar, RR[0]*(1+z)/(1+zs[-1]), RR[-1]*(1+z)/(1+zs[-1])
+			
+	
+				 
 
