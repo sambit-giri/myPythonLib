@@ -1,7 +1,7 @@
 from sklearn.cluster import DBSCAN
 import numpy as np
 import datetime, time
-from Friends_of_Friends import FOF_search
+from Friends_of_Friends import FoF_search
 
 def fof(data, xth=0.5):
 	"""
