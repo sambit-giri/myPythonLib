@@ -43,6 +43,7 @@ def dbscan_cube(cube, eps=1.12, min_samples=7, metric='auto', weight=False):
 	------
 	The output is a tuple containing output-map and volume-list array.
 	"""
+	t1 = datetime.datetime.now()
 	mn, mx = cube.min(), cube.max()
 	X = np.zeros((cube.shape[0]*cube.shape[1]*cube.shape[2],4))
 	X[:,:3] = np.argwhere(~np.isnan(cube))
@@ -57,5 +58,29 @@ def dbscan_cube(cube, eps=1.12, min_samples=7, metric='auto', weight=False):
 		out_cube[X[i,0],X[i,1],X[i,2]] = labels[i]+1
 	for j in xrange(len(sizes)):
 		sizes[j] = labels[labels==j+1].shape[0]
+
+	t2 = datetime.datetime.now()
+	runtime = (t2-t1).total_seconds()/60
 	print "Program runtime: %f minutes." %runtime
+
 	return out_cube, sizes
+
+def get_distribution(array, resolution=1., bins=100, sizes=False):
+	if sizes:
+		sizes = array
+	else:
+		mn, mx = array.min(), array.max()
+		sizes  = np.arange(mx)+1.
+		for i in xrange(int(mx)):
+			label = i+1
+			sizes[i] = len(array[array==label])
+			print label,
+	ht   = np.histogram(np.log(sizes), bins=bins)
+	vols, dist = np.zeros(len(ht[0])+1), np.zeros(len(ht[0])+1)
+	vols      = np.exp(ht[1])*resolution
+	dist[:-1] = ht[0]
+
+	return sizes, dist/np.sum(dist), vols
+
+
+
