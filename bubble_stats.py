@@ -137,7 +137,7 @@ def mfp(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_l
 
 	Output
 	------
-	The output contains a tuple with three values: r, rdP/dr, r, max(r).
+	The output contains a tuple with three values: r, rdP/dr, max(r).
 	"""
 	dim = len(data.shape)
 	t1 = datetime.datetime.now()
@@ -162,7 +162,7 @@ def mfp(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_l
 	print "The output contains a tuple with three values: r, rdP/dr, Most Probable r"
 	print "The curve has been normalized."
 
-	return (nn, rr, rr[nn.argmax()])
+	return rr, nn, rr[nn.argmax()]
 
 def mfp_MPI(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_lim=False, nodes=5):
 	"""
