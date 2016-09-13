@@ -137,7 +137,7 @@ def mfp(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_l
 
 	Output
 	------
-	The output contains a tuple with three values: R dP/dr, R, max(R).
+	The output contains a tuple with three values: r, rdP/dr, r, max(r).
 	"""
 	dim = len(data.shape)
 	t1 = datetime.datetime.now()
@@ -159,7 +159,7 @@ def mfp(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_l
 	runtime = (t2-t1).total_seconds()/60
 
 	print "\nProgram runtime: %f minutes." %runtime
-	print "The output contains a tuple with three values: R dP/dr, R, Most Probable R"
+	print "The output contains a tuple with three values: r, rdP/dr, Most Probable r"
 	print "The curve has been normalized."
 
 	return (nn, rr, rr[nn.argmax()])
@@ -181,7 +181,7 @@ def mfp_MPI(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upp
 
 	Output
 	------
-	The output contains a tuple with three values: R dP/dr, R, Sizes.
+	The output contains a tuple with three values: r, rdP/dr, Sizes.
 	"""
 	dim = len(data.shape)
 	h  = 0.7
@@ -212,9 +212,9 @@ def mfp_MPI(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upp
 	runtime = (t2-t1).total_seconds()/60
 
 	print "\nProgram runtime: %f minutes." %runtime
-	print "The output contains a tuple with three values: R dP/dr, R, Sizes"
+	print "The output contains a tuple with three values: r, rdP/dr, Sizes"
 	print "The curve has been normalized."
 
-	return ht[0]*ht[1][:-1]/iterations, ht[1][:-1], sizes
+	return ht[1][:-1], ht[0]*ht[1][:-1]/iterations, sizes
 
 
