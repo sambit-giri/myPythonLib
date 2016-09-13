@@ -26,7 +26,7 @@ def fof(data, xth=0.5):
 
 	return out_map, size_list
 
-def dbscan_cube(cube, eps=1.12, min_samples=7, metric='euclidean', weight=False):
+def dbscan_cube(cube, eps=1.12, min_samples=5, metric='euclidean', weight=False):
 	"""
 	DBSCAN for bubble size
 	
@@ -50,6 +50,7 @@ def dbscan_cube(cube, eps=1.12, min_samples=7, metric='euclidean', weight=False)
 	The output is a tuple containing output-map and volume-list array.
 	"""
 	t1 = datetime.datetime.now()
+
 	mn, mx = cube.min(), cube.max()
 	X = np.zeros((cube.shape[0]*cube.shape[1]*cube.shape[2],4))
 	X[:,:3] = np.argwhere(~np.isnan(cube))
@@ -59,7 +60,13 @@ def dbscan_cube(cube, eps=1.12, min_samples=7, metric='euclidean', weight=False)
 	if weight: db = DBSCAN(eps=eps, min_samples=min_samples, metric=metric).fit(X,sample_weight=X[:,-1]*(mx-mn)/cube.shape[0])
 	else: db = DBSCAN(eps=eps, min_samples=min_samples, metric=metric).fit(X)
 	labels = db.labels_
+	print "The number of clusters formed is %d." %labels.max()
+	if labels.max()<=0:
+		print "Try other values of eps and min_samples."
+		return 0, 0
+
 	out_cube = np.zeros(cube.shape)
+	sizes = np.zeros(labels.max())
 	for i in xrange(cube.shape[0]*cube.shape[1]*cube.shape[0]):
 		out_cube[X[i,0],X[i,1],X[i,2]] = labels[i]+1
 	for j in xrange(len(sizes)):

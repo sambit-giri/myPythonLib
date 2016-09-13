@@ -38,7 +38,7 @@ def threshold_kmeans(cube, upper_lim=False):
 	The input is the brightness temperature cube.
 	"""
 	array = np.zeros(cube.shape)
-	km = KMeans(n_clusters=2)
+	#km = KMeans(n_clusters=2)
 	X  = cube.reshape(-1,1)
 	y = KMeans(n_clusters=2).fit_predict(X)
 	if X[y==1].mean()>X[y==0].mean(): t_th = X[y==0].max()
@@ -48,6 +48,21 @@ def threshold_kmeans(cube, upper_lim=False):
 	print "The output contains a tuple with binary-cube and determined-threshold."
 	return array, t_th
 	
+def threshold_kmeans_3cluster(cube, upper_lim=False):
+	"""
+	The input is the brightness temperature cube.
+	"""
+	km = KMeans(n_clusters=3)
+	X  = cube.reshape(-1,1)
+	array = np.zeros(X.shape)
+	km.fit(X)
+	y = km.labels_
+	centers = km.cluster_centers_
+	if upper_lim: true_label = centers.argmin()
+	else: true_label = centers.argmax()
+	array[y==true_label] = 1
+	array = array.reshape(cube.shape)
+	return array
 
 def get_binary(array, thres, greater=False):
 	binary = np.zeros(array.shape)
