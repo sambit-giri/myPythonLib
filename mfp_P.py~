@@ -4,7 +4,7 @@ from random import randint
 from scipy import interpolate
 import sys
 
-def mfp2d(arr, xth=0.5, iterations=1000000, verbose=True):
+def mfp2d(arr, xth=0.5, boxsize=100, iterations=1000000, verbose=True):
 	info    = arr.shape	
 	lon	= max([info[0], info[1]])
 	longest = sqrt(2*lon*lon)

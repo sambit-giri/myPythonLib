@@ -241,12 +241,13 @@ def coeval_vel(dens_dir, vel_dir, z, interpolation='linear'):
 		vel = vel_file.get_kms_from_density(dfile)
 		return vel
 	if z in vel_zs:
-		vel = get_vel(vel_files[np.argwhere(z==vel_zs)],dens_files[np.argwhere(z==vel_zs)])
+		file_idx = np.argwhere(z==vel_zs)
+		vel = get_vel(vel_files[np.argwhere(z==vel_zs)], dens_files[np.argwhere(z==vel_zs)])
 	else:
 		z_l = vel_zs[vel_zs<z].max()
 		z_h = vel_zs[vel_zs>z].min()
-		vel_l = get_vel(vel_files[vel_zs[vel_zs<z].argmax()],dens_files[vel_zs[vel_zs<z].argmax()])
-		vel_h = get_vel(vel_files[vel_zs[vel_zs>z].argmin()],dens_files[vel_zs[vel_zs>z].argmin()])
+		vel_l = get_vel(vel_files[vel_zs[vel_zs<z].argmax()])
+		vel_h = (vel_files[vel_zs[vel_zs>z].argmin()])
 		vel = vel_h + (vel_l-vel_h)*(z-z_h)/(z_l-z_h)
 		print "The velocity cube has been interpolated using", interpolation, "interpolation."
 	return vel

@@ -99,12 +99,12 @@ def dist_from_volumes(sizes, resolution=1., bins=100):
 	ht_r  = np.histogram(np.log10(radii), bins=bins)
 	vs, d_v = np.zeros(len(ht_v[0])+1), np.zeros(len(ht_v[0])+1)
 	vs      = 10**ht_v[1]*resolution**3
-	d_v[:-1] = ht_v[0]/np.sum(ht_v[0])
+	d_v[:-1] = ht_v[0]/np.sum(ht_v[0]*(ht_v[1][1]-ht_v[1][0]))/np.log(10)
 	dummy = d_v[d_v!=0].min()/1000.
 	d_v[d_v==0] = dummy
 	rs, d_r = np.zeros(len(ht_r[0])+1), np.zeros(len(ht_r[0])+1)
 	rs      = 10**ht_r[1]*resolution
-	d_r[:-1] = ht_r[0]/np.sum(ht_r[0])
+	d_r[:-1] = ht_r[0]/np.sum(ht_r[0]*(ht_r[1][1]-ht_r[1][0]))/np.log(10)
 	dummy = d_r[d_r!=0].min()/1000.
 	d_r[d_r==0] = dummy
 	print "The output is a tuple conatining 4 numpy array: V, VdP/dV, r, rdp/dr."
