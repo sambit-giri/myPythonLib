@@ -147,6 +147,7 @@ def mfp(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_l
 def mfp_MPI(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_lim=False, nodes=5):
 	"""
 	Mean-Free-Path (MFP) bubble with MPI
+	(Not fixed)
 	
 	Parameter
 	---------

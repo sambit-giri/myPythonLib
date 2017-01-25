@@ -252,6 +252,12 @@ def coeval_vel(dens_dir, vel_dir, z, interpolation='linear'):
 	return vel
 
 def get_adjacent_coevals(xfrac_dir, z, depth_mpc='sim'):
+	"""
+	xfrac_dir : Give the path that contains the xfrac-files.
+	z	  : redshift.
+	depth_mpc : Comoving distance to consider as dz about the provided z (Default:'sim').
+		    The value given should be int/float. 'sim' takes the value from "set_sim_constants".
+	"""
 	xfrac_files = glob.glob(xfrac_dir + '/xfrac3d_*.bin')
 	xfrac_zs = None
 	xfrac_zs = c2t.lightcone._get_file_redshifts(xfrac_zs, xfrac_files)
@@ -266,6 +272,18 @@ def get_adjacent_coevals(xfrac_dir, z, depth_mpc='sim'):
 		z_l = xfrac_zs[xfrac_zs<z].max()
 		z_h = xfrac_zs[xfrac_zs>z].min()
 	return z_l, z_h
-		
-				 
+
+def get_zs_list(xfrac_dir, file_type='/xfrac3d_*.bin'):
+	xfrac_files = glob.glob(xfrac_dir + file_type)	
+	xfrac_zs = None
+	xfrac_zs = c2t.lightcone._get_file_redshifts(xfrac_zs, xfrac_files)
+	return np.sort(xfrac_zs)
+
+def get_dz_from_dcdist(z, dcdist=None):
+	if not dcdist: dcdist = c2t.conv.LB
+	zl = c2t.cdist_to_z(c2t.z_to_cdist(z)-dcdist/2.)
+	zh = c2t.cdist_to_z(c2t.z_to_cdist(z)+dcdist/2.)
+	return zh-zl
+
+		 
 

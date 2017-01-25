@@ -4,6 +4,7 @@ import zahnbubble
 import os
 import datetime, time
 from mfp import mfp2d, mfp3d
+import mfp_np
 
 def fof(data, xth=0.5, boxsize=100):
 	"""
@@ -125,11 +126,13 @@ def mfp(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_l
 		data = -1.*data
 		xth  = -1.*xth
 	if dim == 2:
-		print "MFP method applied on 2D data"
-		out = mfp2d(data, xth, iterations=iterations, verbose=verbose)
+		print "MFP method applied on 2D data (ver 0.2)"
+		#out = mfp2d(data, xth, iterations=iterations, verbose=verbose)
+		out = mfp_np.mfp2d(data, xth, iterations=iterations, verbose=verbose)
 	elif dim == 3:
-		print "MFP method applied on 3D data"
-		out = mfp3d(data, xth, iterations=iterations, verbose=verbose)
+		print "MFP method applied on 3D data (ver 0.2)"
+		#out = mfp3d(data, xth, iterations=iterations, verbose=verbose)
+		out = mfp_np.mfp3d(data, xth, iterations=iterations, verbose=verbose)
 	else:
 		print "The data doesn't have the correct dimension"
 		return 0
@@ -142,7 +145,7 @@ def mfp(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_l
 	print "The output contains a tuple with three values: r, rdP/dr, Most Probable r"
 	print "The curve has been normalized."
 
-	return rr*boxsize/data.shape[0], rr*nn, rr[nn.argmax()]
+	return rr*boxsize/data.shape[0], rr*nn, rr[nn.argmax()]*boxsize/data.shape[0]
 
 def mfp_MPI(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_lim=False, nodes=5):
 	"""
