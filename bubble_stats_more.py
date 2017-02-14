@@ -2,6 +2,10 @@ from sklearn.cluster import DBSCAN
 import numpy as np
 import datetime, time
 from Friends_of_Friends import FoF_search
+from scipy import ndimage as ndi
+
+from skimage.morphology import watershed
+from skimage.feature import peak_local_max
 
 def fof(data, xth=0.5):
 	"""
@@ -78,6 +82,27 @@ def dbscan_cube(cube, eps=1.12, min_samples=7, metric='euclidean', weight=False)
 	print "Program runtime: %f minutes." %runtime
 	return out_cube, sizes
 
+def watershed_cube(data, xth=0.5):
+	"""
+	Watershed
+	
+	Parameter
+	---------
+	input  : 3D array of ionization fraction.
+	xth    : The threshold value (Default: 0.5).
+
+	Output
+	------
+	The output is a tuple containing output-map and volume-list array.
+	"""
+	image = data>xth
+	distance = ndi.distance_transform_edt(image)
+	local_maxi = peak_local_max(distance, indices=False, footprint=np.ones((3, 3, 3)), labels=image)
+	markers = ndi.label(local_maxi)[0]
+	labels = watershed(-distance, markers, mask=image)
+	sizes  = [labels[labels==i].size for i in np.unique(labels)]
+	return labels, sizes
+
 def dist_from_volumes(sizes, resolution=1., bins=100):
 	"""
 	Volume distribution and effective radius distribution.
@@ -97,16 +122,15 @@ def dist_from_volumes(sizes, resolution=1., bins=100):
 	radii = (vols*3./4./np.pi)**(1./3.)
 	ht_v  = np.histogram(np.log10(vols), bins=bins)
 	ht_r  = np.histogram(np.log10(radii), bins=bins)
-	vs, d_v = np.zeros(len(ht_v[0])+1), np.zeros(len(ht_v[0])+1)
-	vs      = 10**ht_v[1]*resolution**3
-	d_v[:-1] = ht_v[0]/np.sum(ht_v[0])
+	vs, d_v  = np.zeros(len(ht_v[0])+1), np.zeros(len(ht_v[0])+1)
+	vs       = 10.**ht_v[1]*resolution**3
+	d_v[:-1] = 1.*ht_v[0]/np.sum(ht_v[0])
 	dummy = d_v[d_v!=0].min()/1000.
 	d_v[d_v==0] = dummy
-	rs, d_r = np.zeros(len(ht_r[0])+1), np.zeros(len(ht_r[0])+1)
-	rs      = 10**ht_r[1]*resolution
-	d_r[:-1] = ht_r[0]/np.sum(ht_r[0])
-	dummy = d_r[d_r!=0].min()/1000.
-	d_r[d_r==0] = dummy
+	rs, d_r  = np.zeros(len(ht_r[0])+1), np.zeros(len(ht_r[0])+1)
+	rs       = 10.**ht_r[1]*resolution
+	d_r[1:]  = 1.*ht_r[0]/np.sum(ht_r[0])
+	d_r[0]   = d_r[d_r!=0].min()/1000.
 	print "The output is a tuple conatining 4 numpy array: V, VdP/dV, r, rdp/dr."
 	return vs, d_v, rs, d_r
 	
