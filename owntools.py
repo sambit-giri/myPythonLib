@@ -37,7 +37,7 @@ def threshold_PDF_split(cube, bins=200, upper_lim=False):
 	print "The output contains a tuple with binary-cube and determined-threshold."
 	return array, t_th
 
-def threshold_kmeans(cube, upper_lim=False, mean_remove=True):
+def threshold_kmeans(cube, upper_lim=False, mean_remove=True, n_jobs=1):
 	"""
 	The input is the brightness temperature cube.
 	"""
@@ -48,7 +48,7 @@ def threshold_kmeans(cube, upper_lim=False, mean_remove=True):
 		else: X = cube[cube>=cube.mean()].reshape(-1,1)
 	else:
 	 	X  = cube.reshape(-1,1)
-	y = KMeans(n_clusters=2).fit_predict(X)
+	y = KMeans(n_clusters=2, n_jobs=n_jobs).fit_predict(X)
 	if X[y==1].mean()>X[y==0].mean(): t_th = X[y==0].max()
 	else: t_th = X[y==1].max()
 	if upper_lim: array[cube<=t_th] = 1
@@ -56,11 +56,11 @@ def threshold_kmeans(cube, upper_lim=False, mean_remove=True):
 	print "The output contains a tuple with binary-cube and determined-threshold."
 	return array, t_th
 	
-def threshold_kmeans_3cluster(cube, upper_lim=False):
+def threshold_kmeans_3cluster(cube, upper_lim=False, n_jobs=1):
 	"""
 	The input is the brightness temperature cube.
 	"""
-	km = KMeans(n_clusters=3)
+	km = KMeans(n_clusters=3, n_jobs=n_jobs)
 	X  = cube.reshape(-1,1)
 	array = np.zeros(X.shape)
 	km.fit(X)
@@ -274,6 +274,15 @@ def get_adjacent_coevals(xfrac_dir, z, depth_mpc='sim'):
 	return z_l, z_h
 
 def get_zs_list(xfrac_dir, file_type='/xfrac3d_*.bin'):
+	"""
+	xfrac_dir: Provide the directory whic contains all the data with redshift values in the name.
+	file_type: Give the filename used to list it in Unix.
+		   Example- xfrac files:   '/xfrac3d_*.bin' (Default)
+			    density files: '/*n_all.dat'
+	return   
+	------
+	The list of redshift values in the increasing order.
+	"""
 	xfrac_files = glob.glob(xfrac_dir + file_type)	
 	xfrac_zs = None
 	xfrac_zs = c2t.lightcone._get_file_redshifts(xfrac_zs, xfrac_files)
