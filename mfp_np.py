@@ -63,7 +63,7 @@ def mfp2d(arr, xth=0.5, iterations=1000000, verbose=True):
 
 	xs,ys    = loc[rand_loc,0],loc[rand_loc,1]
 	
-	interp_func = RegularGridInterpolator((np.arange(info[0]), np.arange(info[1]))), ar, bounds_error=False, fill_value=0)
+	interp_func = RegularGridInterpolator((np.arange(info[0]), np.arange(info[1])), ar, bounds_error=False, fill_value=0)
 
 	for rr in xrange(longest):
 		xs,ys  = xs+ls,ys+ms
