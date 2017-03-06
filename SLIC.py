@@ -23,13 +23,14 @@ def see_label(out_map, label):
 	else: print "The entered label in not present in the map."
 	return binary
 
-def binary_stitch(data, labels, stitch='mean'):
+def binary_stitch(data, labels, stitch='mean', thres=None):
 	X1 = data.reshape(-1,1)
 	X  = np.argwhere(data!=np.nan)*X1
 	y  = labels.reshape(-1,1)
 	y1 = [X1[y==i].mean() for i in np.unique(y)]
-	if stitch=='otsu': thres = threshold_otsu(np.array(y1))
-	else: thres = X1.mean()
+	if not thres:
+		if stitch=='otsu': thres = threshold_otsu(np.array(y1))
+		else: thres = X1.mean()
 	y2 = np.zeros(y.shape)
 	for i in np.unique(y): y2[y==i] = y1[i]
 	y2 = y2 < thres
