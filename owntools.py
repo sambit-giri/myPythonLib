@@ -223,6 +223,16 @@ def coeval_dens(dens_dir, z, interpolation='linear'):
 		print "The density cube has been interpolated using", interpolation, "interpolation."
 	return dens
 
+def coeval_overdens(dens_dir, z, interpolation='linear'):
+	"""
+	dens_dir      : Give the path that contains the density-files.
+	z	      : Redshift.
+	interpolation : This is used when the coveal cube at that redshift is not available.
+	"""
+	dens     = coeval_dens(dens_dir, z, interpolation=interpolation)
+	overdens = dens/dens.mean(dtype=np.float64) - 1. 
+	return overdens
+
 def coeval_vel(dens_dir, vel_dir, z, interpolation='linear'):
 	"""
 	vel_dir       : Give the path that contains the velocity-files.
