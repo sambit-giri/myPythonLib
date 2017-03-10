@@ -142,6 +142,30 @@ def draw_circle(array, centre, radius, label=1, periodic=True):
 				if i*i+j*j <= radius*radius: array[x,y] = label
 	if periodic: print "Periodic circle of radius", radius, "made at", centre
 	else: print "Non-periodic circle of radius", radius, "made at", centre
+
+def put_circle(array, centre, radius, label=1, periodic=True):
+	assert array.ndim == 2
+	nx, ny = array.shape
+	aw  = np.argwhere(np.isfinite(array))
+	RR  = ((aw[:,0]-centre[0])**2 + (aw[:,1]-centre[1])**2).reshape(array.shape)
+	array[RR<=radius**2] = label
+	if periodic: 
+		RR2 = (aw[:,0]+nx-centre[0])**2 + (aw[:,1]+ny-centre[1])**2
+		array[RR2<=radius**2] = label
+		print "Periodic circle of radius", radius, "made at", centre
+	else: print "Non-periodic circle of radius", radius, "made at", centre
+
+def put_sphere(array, centre, radius, label=1, periodic=True):
+	assert array.ndim == 3
+	nx, ny, nz = array.shape
+	aw  = np.argwhere(np.isfinite(array))
+	RR  = ((aw[:,0]-centre[0])**2 + (aw[:,1]-centre[1])**2 + (aw[:,2]-centre[2])**2).reshape(array.shape)
+	array[RR<=radius**2] = label
+	if periodic: 
+		RR2 = ((aw[:,0]+nx-centre[0])**2 + (aw[:,1]+ny-centre[1])**2 + (aw[:,2]+nz-centre[2])**2).reshape(array.shape)
+		array[RR2<=radius**2] = label
+		print "Periodic circle of radius", radius, "made at", centre
+	else: print "Non-periodic circle of radius", radius, "made at", centre
 				
 				
 def evolving_sphere(R, z, res=256, c_res=c2t.conv.LB, alpha=4.):

@@ -34,7 +34,7 @@ def mfp3d(arr, xth=0.5, iterations=10000000, verbose=True):
 		xs,ys,zs = np.delete(xs, check),np.delete(ys, check),np.delete(zs, check)
 		ls,ms,ns = np.delete(ls, check),np.delete(ms, check),np.delete(ns, check)
 		if verbose:
-			perc = (rr+1.)*100/longest
+			perc = (rr+1)*100/longest
 			msg  = str(perc) + '%'
 			loading_verbose(msg)
 		if not xs.size: break
@@ -74,7 +74,7 @@ def mfp2d(arr, xth=0.5, iterations=1000000, verbose=True):
 		xs,ys  = np.delete(xs, check),np.delete(ys, check)
 		ls,ms  = np.delete(ls, check),np.delete(ms, check)
 		if verbose:
-			perc = (rr+1.)*100/longest
+			perc = (rr+1)*100/longest
 			msg  = str(perc) + '%'
 			loading_verbose(msg)
 		if not xs.size: break
