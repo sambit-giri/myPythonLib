@@ -103,6 +103,14 @@ def zahn(data, xth=0.5, boxsize=100, nscales=20, upper_lim=False):
 
 	return np.array(radius).astype(float), np.array(num_ion).astype(float), np.array(num_neut).astype(float)
 
+def spa(data, xth=0.95, boxsize=100, nscales=30, upper_lim=False):
+	rr,ni,nn = zahn(data, xth=xth, boxsize=boxsize, nscales=nscales, upper_lim=upper_lim)
+	r_min = boxsize/data.shape[0]
+	rr_   = rr[rr>=r_min]
+	ni_   = ni[rr>=r_min]
+	nn_   = nn[rr>=r_min]
+	return rr_, ni_*ni.sum()/ni_.sum(), nn_*nn.sum()/nn_.sum()
+
 def mfp(data, xth=0.5, boxsize=100, iterations = 10000000, verbose=True, upper_lim=False):
 	"""
 	Mean-Free-Path (MFP) bubble

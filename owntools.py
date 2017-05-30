@@ -2,7 +2,7 @@ import numpy as np
 import c2raytools as c2t
 from scipy.signal import argrelextrema
 from sklearn.cluster import KMeans
-import glob
+import glob, sys
 
 def threshold_21cm(cube, p=0.25):
 	out = np.zeros(cube.shape)
@@ -191,7 +191,7 @@ def evolving_sphere(R, z, res=256, c_res=c2t.conv.LB, alpha=4.):
 			ar[:,:,k] = dum
 	return ar, RR[0]*(1+z)/(1+zs[-1]), RR[-1]*(1+z)/(1+zs[-1])
 			
-def coeval_21cm(xfrac_dir, dens_dir, z, interpolation='linear'):
+def coeval_21cm(xfrac_dir, dens_dir, z, interpolation='linear', mean_subtract=False):
 	"""
 	xfrac_dir     : Give the path that contains the xfrac-files.
 	dens_dir      : Give the path that contains the density-files.
@@ -200,7 +200,9 @@ def coeval_21cm(xfrac_dir, dens_dir, z, interpolation='linear'):
 	"""
 	xfrac = coeval_xfrac(xfrac_dir, z, interpolation=interpolation)
 	dens  = coeval_dens(dens_dir, z, interpolation=interpolation)
-	return c2t.calc_dt(xfrac, dens, z=z)
+	dt    = c2t.calc_dt(xfrac, dens, z=z)
+	if mean_subtract: return dt-dt.mean()
+	else: return dt
 
 
 def coeval_xfrac(xfrac_dir, z, interpolation='linear'):
@@ -245,7 +247,7 @@ def coeval_dens(dens_dir, z, interpolation='linear'):
 		dens_h, dtype = c2t.helper_functions.get_data_and_type(dens_files[dens_zs[dens_zs>z].argmin()])
 		dens = dens_h + (dens_l-dens_h)*(z-z_h)/(z_l-z_h)
 		print "The density cube has been interpolated using", interpolation, "interpolation."
-	return dens
+	return dens.astype(np.float64)
 
 def coeval_overdens(dens_dir, z, interpolation='linear'):
 	"""
@@ -328,5 +330,36 @@ def get_dz_from_dcdist(z, dcdist=None):
 	zh = c2t.cdist_to_z(c2t.z_to_cdist(z)+dcdist/2.)
 	return zh-zl
 
-		 
+def photoncount_info(filename):
+	if filename.split('/')[-1]=='PhotonCounts2.out': bla = np.loadtxt(filename)
+	else: bla = np.loadtxt(filename+'/PhotonCounts2.out')
+	print "redshift, total number of ions, grand total ionizing photons, mean ionization fraction (by volume and mass)"
+	return bla
+
+def Mgrid_2_Msolar(M):
+	#max_select_grid_mass = max_select_mass/(conv.M_grid*const.solar_masses_per_gram)
+	return M*(c2t.conv.M_grid*c2t.const.solar_masses_per_gram)
+
+def Msolar_2_Mgrid(M):
+	#max_select_grid_mass = max_select_mass/(conv.M_grid*const.solar_masses_per_gram)
+	return M/(c2t.conv.M_grid*c2t.const.solar_masses_per_gram)
+
+def load_binary_data(filename, dtype=np.float32): 
+	""" 
+	We assume that the data was written 
+	with write_binary_data() (little endian). 
+	""" 
+	f = open(filename, "rb") 
+	data = f.read() 
+	f.close() 
+	_data = np.fromstring(data, dtype) 
+	if sys.byteorder == 'big':
+		_data = _data.byteswap()
+	return _data 
+
+def read_21cmfast_files(filename):
+	bla = load_binary_data(filename)
+	dim = round(bla.size**0.333333)
+	return bla.reshape(dim,dim,dim)
+	
 
